@@ -11,5 +11,6 @@ Extension to automate lazy load / infinite scrolling on Twitter, Instagram & Red
 
 Set `Scroll Timeout=0` to view only videos
 
+[How to download?](https://www.youtube.com/watch?v=vW8W19W_X0I)
 
 ![Example](Images/Example.png)
