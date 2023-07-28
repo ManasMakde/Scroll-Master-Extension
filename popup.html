@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Scroll Master</title>
+    <style>
+      html,
+      body {
+        font-family: "Open Sans", sans-serif;
+        font-size: 14px;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        align-items: center;
+        min-height: min-content;
+        width: 325px;
+        box-sizing: border-box;
+      }
+      body{
+        display: grid;
+        border: 0.3rem solid #ff4500;
+        grid-template-rows: min-content min-content 1fr;
+        grid-template-columns: 1fr 1.2fr;
+        row-gap: 1.5rem;
+      }
+      .icon{
+        display:block;
+        width:5rem;
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+          -moz-user-select: none; /* Old versions of Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none;
+      }
+      
+      .control_btn{
+        margin: 1rem 0;
+        padding: 1rem 2rem;
+        display: block;
+        background-image: linear-gradient(to bottom right, #ff4500, #f8a23f);
+        color:white;
+        border:0;
+        font-size: 2rem;
+        position: relative;
+        height:min-content;
+        width:min-content;
+        border-radius: 5rem;
+        transition: filter 100ms linear;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      .control_btn:hover{
+        filter: brightness(1.2);
+        cursor: pointer;
+      }
+      .control_btn:active{
+        filter: brightness(1.5);
+        transition: none;
+      }
+
+      .disabled{
+        filter: grayscale(95%);
+        pointer-events: none;
+      }
+      .pending{
+        opacity: 0.4;
+        pointer-events: none;
+      }
+
+      #prev_btn{
+        position: relative;
+        padding: 0.5rem 1.5rem;
+        margin-left: 1rem;
+        grid-row: 2;
+        grid-column: 1;
+      }
+      #prev_btn::after{
+        content: "";
+        position: absolute;
+        height:25%;
+        width:25%;
+        border-right:solid 0.3rem white;
+        border-bottom:solid 0.3rem white;
+
+        top:50%;
+        left:50%;
+
+        transform: translate(-25%,-50%) rotate(135deg);
+
+        user-select: none;
+      }
+      #toggle_btn{
+        left:50%;
+        transform: translate(-50%,0);
+        grid-row: 2;
+        grid-column: 1 / span 2;
+      }
+      #next_btn{
+        grid-row: 2;
+        grid-column: 2;
+        position: relative;
+        left: 100%;
+        transform: translate(calc(-100% - 1rem), 0);
+        padding: 0.5rem 1.5rem;
+      }
+      #next_btn::after{
+        content: "";
+        position: absolute;
+        height:25%;
+        width:25%;
+        display: block;
+        border-right:solid 0.3rem white;
+        border-bottom:solid 0.3rem white;
+
+        top:50%;
+        left:50%;
+
+        transform: translate(-75%,-50%) rotate(-45deg);
+
+        user-select: none;
+      }
+      
+      .timeout_label{
+        text-align: end;
+        padding: 0 0.5rem 0 1rem;
+        font-weight: bold;
+        margin: 2rem 0;
+      }
+      .timeout_input{
+        margin: 0 auto;
+        height: min-content;
+        width: calc(100% - 3rem);
+        padding-top: 0.5rem;
+        background-color:#e0e0e0;
+        border: 0;
+        outline: none;
+        padding-left: 0.3rem;
+        border-bottom: 2px gray solid;
+        transition: background-color 100ms linear;
+      }
+      .timeout_input:focus{
+        background-color: #cedeee;
+
+      }
+
+      #current_scroll{
+        margin-left: 1.5rem;
+        width: fit-content;
+        transform:scale(1.5);
+        accent-color:#ff4500;
+      }
+
+      .hidden{
+        z-index: -1;
+        height:0;
+        width:0;
+        visibility: hidden;
+      }
+      #invalid{
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        font-weight:bold;
+        background-color: rgba(255, 255, 255, 0.95);
+        z-index: 2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #invalid::after{
+        content: "Does not work on this site";
+        position:absolute;
+        font-size: large;
+        text-align: center;
+
+      }
+
+      
+      #error{
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        font-weight:bold;
+        background-color: rgba(255, 255, 255, 0.95);
+        z-index: 3;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #error::after{
+        padding:0 2rem;
+        content: "Site Messed Up! Please Reload Page";
+        position:absolute;
+        font-size: large;
+        text-align: center;
+
+      }
+    </style>
+    <script src="popup.js"></script>
+  </head>
+
+  <body>
+    <div id="invalid"></div>
+    <div id="error" class="hidden"></div>
+    <img src="Images/iconTop.png" class="icon" style="grid-row:1;grid-column:1;" />
+
+    <button id="prev_btn" class="control_btn disabled" tabindex="-1">&nbsp;</button>
+    <button id="toggle_btn" class="control_btn">Paused</button>
+    <button id="next_btn" class="control_btn disabled" tabindex="-1">&nbsp;</button>
+
+    <label class="timeout_label" style="grid-row:3;grid-column:1;">Scroll Timeout</label><input id="scroll_timeout" type="number" max="100" min="0" value="4.5" class="timeout_input" style="grid-row:3;grid-column:2;"/>
+
+    <img src="Images/iconBottom.png" class="icon" style="grid-row: 4;grid-column: 2;align-self: end;margin-left: auto;"/>
+  </body>
+</html>
